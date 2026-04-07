@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "license-plate-detector"
+version = "1.0.0"
+description = "Система обнаружения номерных знаков на базе YOLOv8"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{ include = "license_plate_detector", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+ultralytics = "^8.0"        # YOLOv8 от Ultralytics
+opencv-python = "^4.8"      # обработка видео и изображений
+numpy = "^1.24"             # работа с массивами
+torch = "^2.6"              # PyTorch (основа YOLO)
+torchvision = "^0.21"       # дополнения к PyTorch
+wandb = "^0.16"             # логирование экспериментов
+pyyaml = "^6.0"             # работа с yaml-файлами
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4"             # тестирование
+black = "^23.0"             # форматирование кода
+ruff = "^0.1"               # линтер
+
+[tool.poetry.scripts]
+# После установки пакета команда 'detect' станет доступна в терминале
+detect = "license_plate_detector.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+line-length = 100

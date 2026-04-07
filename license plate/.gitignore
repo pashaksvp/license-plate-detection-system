@@ -1,0 +1,76 @@
+# =========================================================
+# .gitignore — файлы, которые НЕ попадают в репозиторий
+# =========================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl          # ВАЖНО: .whl создаётся командой poetry build
+               # и добавляется в репозиторий вручную (требование задания)
+               # Для этого закомментируйте эту строку перед публикацией
+
+# --- Virtual environments ---
+.env
+.venv
+env/
+venv/
+ENV/
+.conda/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Тяжёлые данные (НЕ в репозиторий!) ---
+data/images/          # изображения датасета (могут весить гигабайты)
+data/labels/          # разметка датасета
+data/*.mp4            # видеофайлы
+data/*.avi
+data/*.mkv
+data/log_file.log     # логи (создаются автоматически)
+
+# --- Веса моделей (большие файлы) ---
+# Исключение: best.pt можно добавить через Git LFS
+*.pt
+*.pth
+*.onnx
+
+# --- YOLO / Ultralytics ---
+runs/detect/*/       # результаты обучения (кроме финальных весов)
+
+# --- Wandb ---
+wandb/
+
+# --- Docker ---
+.dockerignore
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Временные файлы ---
+*.tmp
+*.bak
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

@@ -1,0 +1,120 @@
+# =========================================================
+# docker-compose.yaml — оркестрация контейнеров
+# =========================================================
+#
+# docker-compose позволяет запускать несколько контейнеров
+# и настраивать их взаимодействие через единый файл конфигурации.
+#
+# Запуск режима VIDEO:
+#   docker-compose run detector-video
+#
+# Запуск режима CAMERA:
+#   docker-compose run detector-camera
+#
+# Просмотр логов:
+#   docker-compose logs -f
+# =========================================================
+
+version: "3.9"
+
+services:
+
+  # ---- Режим VIDEO: обработка видеофайла ----
+  detector-video:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: license-plate-detector:latest
+    container_name: lpd_video
+
+    # Монтируем локальную папку data/ внутрь контейнера
+    # Это позволяет:
+    # - передавать входное видео (./data/input.mp4)
+    # - получать результат (./data/output.mp4)
+    # - читать логи (./data/log_file.log) прямо с хоста
+    volumes:
+      - ./data:/app/data
+      - ./runs:/app/runs    # веса модели
+
+    # Команда для режима VIDEO
+    # Переменные VIDEO_INPUT и VIDEO_OUTPUT можно переопределить через .env
+    command: >
+      video
+      --input /app/data/${VIDEO_INPUT:-input.mp4}
+      --output /app/data/${VIDEO_OUTPUT:-output.mp4}
+      --weights /app/runs/detect/train/weights/best.pt
+      --conf 0.4
+
+    # Режим перезапуска: не перезапускать после завершения
+    restart: "no"
+
+    # Ограничения ресурсов
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  # ---- Режим CAMERA: поток с веб-камеры ----
+  detector-camera:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: license-plate-detector:latest
+    container_name: lpd_camera
+
+    volumes:
+      - ./data:/app/data
+      - ./runs:/app/runs
+
+    # Передаём устройство камеры в контейнер
+    # /dev/video0 — стандартная веб-камера на Linux
+    devices:
+      - /dev/video0:/dev/video0
+
+    # Для отображения окна OpenCV нужен X11
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - ./data:/app/data
+      - ./runs:/app/runs
+      - /tmp/.X11-unix:/tmp/.X11-unix  # X11 сокет для GUI
+
+    command: >
+      camera
+      --camera-id 0
+      --weights /app/runs/detect/train/weights/best.pt
+      --save /app/data/camera_output.mp4
+
+    restart: "no"
+
+  # ---- Скрипт обучения (опционально) ----
+  trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: license-plate-detector:latest
+    container_name: lpd_trainer
+
+    volumes:
+      - ./data:/app/data
+      - ./runs:/app/runs
+
+    # GPU: раскомментируйте если есть NVIDIA GPU и nvidia-docker
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+    # Команда обучения (переопределяет ENTRYPOINT)
+    entrypoint: ["python", "train/train.py"]
+    command: >
+      --data /app/data/dataset.yaml
+      --epochs 50
+      --batch 16
+      --device cpu
+      --wandb
+
+    restart: "no"
