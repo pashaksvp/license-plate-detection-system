@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['license-plate']
+
+roboflow:
+  workspace: s-workspace-yfqo4
+  project: license-plate-ip8pm
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/s-workspace-yfqo4/license-plate-ip8pm/dataset/1
