@@ -10,7 +10,7 @@ __pycache__/
 .Python
 *.egg
 *.egg-info/
-dist/
+# dist/
 build/
 eggs/
 .eggs/
@@ -20,7 +20,7 @@ parts/
 sdist/
 var/
 wheels/
-*.whl          # ВАЖНО: .whl создаётся командой poetry build
+# *.whl          # ВАЖНО: .whl создаётся командой poetry build
                # и добавляется в репозиторий вручную (требование задания)
                # Для этого закомментируйте эту строку перед публикацией
 
