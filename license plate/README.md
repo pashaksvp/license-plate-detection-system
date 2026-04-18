@@ -1,15 +1,15 @@
 # License Plate Detector
 
-**Студент:** Фомин Павел Андреевич
+**Студент:** Фомин Павел Андреевич  
 **Группа:** 972402  
 
-Проект по домашнему заданию №2 — детекция номерных знаков с помощью YOLOv8.
+Проект по домашнему заданию №2 — детекция и распознавание номерных знаков с помощью YOLOv8 + EasyOCR.
 
 ---
 
 ## Что сделано
 
-Написал систему которая находит номерные знаки на видео и в потоке с камеры. За основу взял архитектуру YOLOv8 от Ultralytics, дообучил на датасете с номерами.
+Написал систему которая находит номерные знаки на видео и читает текст с них. За основу взял архитектуру YOLOv8 от Ultralytics, дообучил на датасете с номерами. Для распознавания текста добавил EasyOCR.
 
 Два режима работы:
 - **video** — обрабатывает видеофайл и сохраняет результат
@@ -50,6 +50,7 @@ license plate/
 │   └── log_file.log          # логи
 ├── dist/
 │   └── license_plate_detector-1.0.0-py3-none-any.whl
+├── ocr.py                    # распознавание текста на номерах
 ├── Dockerfile
 ├── docker-compose.yaml
 └── pyproject.toml
@@ -114,6 +115,30 @@ PYTHONPATH=src python -m license_plate_detector.cli \
   --show
 ```
 
+---
+
+## Распознавание текста на номерах (OCR)
+
+Помимо детекции добавил распознавание текста с помощью EasyOCR. Скрипт вырезает область номера, увеличивает её и передаёт в OCR.
+
+```bash
+PYTHONPATH=src python ocr.py \
+  --input video.mp4 \
+  --output result_ocr.mp4 \
+  --weights runs/train/weights/best.pt \
+  --show
+```
+
+На каждом номере отображается распознанный текст и уверенность. Если текст не удалось прочитать — показывается `?`.
+
+Пример вывода:
+```
+[INFO] Кадр 150: распознан номер 'A123BC'
+[INFO] Кадр 151: распознан номер 'K456HX'
+```
+
+---
+
 ## Как запустить тесты
 
 ```bash
@@ -169,6 +194,7 @@ for plate in detections:
 - [Ultralytics YOLOv8 Docs](https://docs.ultralytics.com/)
 - [YOLO на Habr](https://habr.com/ru/articles/821971/)
 - [Статья про YOLO на Timeweb](https://timeweb.cloud/blog/yolo-neyroset-obnaruzhenie-obektov)
+- [EasyOCR GitHub](https://github.com/JaidedAI/EasyOCR)
 - [Датасет License Plate Recognition](https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e)
 - [Roboflow](https://roboflow.com) — разметка и управление датасетом
 - [Weights & Biases](https://wandb.ai) — мониторинг обучения
