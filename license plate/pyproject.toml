@@ -15,6 +15,7 @@ torch = "^2.6"              # PyTorch (основа YOLO)
 torchvision = "^0.21"       # дополнения к PyTorch
 wandb = "^0.16"             # логирование экспериментов
 pyyaml = "^6.0"             # работа с yaml-файлами
+easyocr = "^1.7.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"             # тестирование
